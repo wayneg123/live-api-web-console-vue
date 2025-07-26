@@ -86,7 +86,7 @@ import cn from 'classnames'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useLiveAPIContext } from '../../composables/useLiveAPIContext'
 import { useLoggerStore } from '../../stores/useLoggerStore'
-import Logger, { LoggerFilterType } from '../logger/Logger.vue'
+import Logger, { type LoggerFilterType } from '../logger/Logger.vue'
 
 const filterOptions = [
   { value: 'conversations', label: 'Conversations' },

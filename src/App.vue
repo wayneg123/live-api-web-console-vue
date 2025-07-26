@@ -7,18 +7,9 @@
           <div class="main-app-area">
             <!-- APP goes here -->
             <Altair />
-            <video
-              :class="['stream', { hidden: !videoRef || !videoStream }]"
-              ref="videoRef"
-              autoplay
-              playsinline
-            />
           </div>
 
           <ControlTray
-            :video-ref="videoRef"
-            :supports-video="true"
-            @video-stream-change="setVideoStream"
             :enable-editing-settings="true"
           >
             <!-- put your own buttons here -->
@@ -46,7 +37,7 @@
  * limitations under the License.
  */
 
-import { ref } from 'vue'
+
 import './App.scss'
 import LiveAPIProvider from './contexts/LiveAPIContext.vue'
 import SidePanel from './components/side-panel/SidePanel.vue'
@@ -61,15 +52,5 @@ if (typeof API_KEY !== 'string') {
 
 const apiOptions: LiveClientOptions = {
   apiKey: API_KEY,
-}
-
-// this video reference is used for displaying the active stream, whether that is the webcam or screen capture
-// feel free to style as you see fit
-const videoRef = ref<HTMLVideoElement | null>(null)
-// either the screen capture, the video or null, if null we hide it
-const videoStream = ref<MediaStream | null>(null)
-
-const setVideoStream = (stream: MediaStream | null) => {
-  videoStream.value = stream
 }
 </script>
