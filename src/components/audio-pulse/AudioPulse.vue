@@ -26,7 +26,7 @@
  * limitations under the License.
  */
 
-import './audio-pulse.scss'
+import './audio-pulse.css'
 import { onUnmounted, ref, watch } from 'vue'
 
 export interface AudioPulseProps {

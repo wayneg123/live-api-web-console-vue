@@ -81,7 +81,7 @@
  * limitations under the License.
  */
 
-import './side-panel.scss'
+import './side-panel.css'
 import cn from 'classnames'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useLiveAPIContext } from '../../composables/useLiveAPIContext'

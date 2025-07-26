@@ -56,7 +56,7 @@ import { onUnmounted, ref, watch } from 'vue'
 import { useLiveAPIContext } from '../../composables/useLiveAPIContext'
 import { AudioRecorder } from '../../lib/audio-recorder'
 import AudioPulse from '../audio-pulse/AudioPulse.vue'
-import './control-tray.scss'
+import './control-tray.css'
 import SettingsDialog from '../settings-dialog/SettingsDialog.vue'
 
 export interface ControlTrayProps {

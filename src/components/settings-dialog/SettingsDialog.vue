@@ -77,7 +77,7 @@
  */
 
 import { computed, ref } from 'vue'
-import './settings-dialog.scss'
+import './settings-dialog.css'
 import { useLiveAPIContext } from '../../composables/useLiveAPIContext'
 import VoiceSelector from './VoiceSelector.vue'
 import ResponseModalitySelector from './ResponseModalitySelector.vue'

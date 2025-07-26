@@ -6,7 +6,6 @@
         <main>
           <div class="main-app-area">
             <!-- APP goes here -->
-            <Altair />
           </div>
 
           <ControlTray
@@ -38,10 +37,9 @@
  */
 
 
-import './App.scss'
+import './App.css'
 import LiveAPIProvider from './contexts/LiveAPIContext.vue'
 import SidePanel from './components/side-panel/SidePanel.vue'
-import Altair from './components/altair/Altair.vue'
 import ControlTray from './components/control-tray/ControlTray.vue'
 import { type LiveClientOptions } from './types'
 

@@ -41,7 +41,7 @@
  * limitations under the License.
  */
 
-import './logger.scss'
+import './logger.css'
 import cn from 'classnames'
 import { computed, defineComponent, h } from 'vue'
 import { useLoggerStore } from '../../stores/useLoggerStore'
