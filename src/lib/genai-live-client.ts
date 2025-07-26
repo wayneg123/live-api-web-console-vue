@@ -33,7 +33,7 @@ import type {
 } from "@google/genai";
 
 import { EventEmitter } from "eventemitter3";
-import { difference } from "lodash";
+import { difference } from "lodash-es";
 import type { LiveClientOptions } from "../types";
 import type { StreamingLog } from "../types";
 import { base64ToArrayBuffer } from "./utils";
