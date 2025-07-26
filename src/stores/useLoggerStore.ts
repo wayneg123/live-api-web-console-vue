@@ -24,7 +24,7 @@ export const useLoggerStore = defineStore('logger', () => {
   const logs = ref<StreamingLog[]>([]) // mockLogs
 
   const log = ({ date, type, message }: StreamingLog) => {
-    const prevLog = logs.value.at(-1)
+    const prevLog = logs.value[logs.value.length - 1]
     if (prevLog && prevLog.type === type && prevLog.message === message) {
       logs.value = [
         ...logs.value.slice(0, -1),
