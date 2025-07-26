@@ -1,3 +1,8 @@
+<template>
+  <slot />
+</template>
+
+<script setup lang="ts">
 /**
  * Copyright 2024 Google LLC
  *
@@ -14,22 +19,17 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { provide } from 'vue'
+import { useLiveAPI } from '../hooks/use-live-api'
+import type { LiveClientOptions } from '../types'
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export interface LiveAPIProviderProps {
+  options: LiveClientOptions
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const props = defineProps<LiveAPIProviderProps>()
+
+const liveAPI = useLiveAPI(props.options)
+
+provide('liveAPI', liveAPI)
+</script>

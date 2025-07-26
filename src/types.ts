@@ -15,11 +15,12 @@
  */
 
 import {
-  GoogleGenAIOptions,
   LiveClientToolResponse,
   LiveServerMessage,
-  Part,
 } from "@google/genai";
+
+// Import types that are only available as TypeScript types
+import type { GoogleGenAIOptions, Part } from "@google/genai";
 
 /**
  * the options to initiate the client, ensure apiKey is required

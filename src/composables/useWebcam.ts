@@ -14,60 +14,62 @@
  * limitations under the License.
  */
 
-import { ref, watch } from "vue";
-import { UseMediaStreamResult } from "./use-media-stream-mux";
+import { ref, watch, onUnmounted } from 'vue'
+import { type UseMediaStreamResult } from '../hooks/use-media-stream-mux'
 
 export function useWebcam(): UseMediaStreamResult {
-  const stream = ref<MediaStream | null>(null);
-  const isStreaming = ref(false);
+  const stream = ref<MediaStream | null>(null)
+  const isStreaming = ref(false)
+
+  const handleStreamEnded = () => {
+    isStreaming.value = false
+    stream.value = null
+  }
 
   watch(stream, (newStream, oldStream) => {
-    const handleStreamEnded = () => {
-      isStreaming.value = false;
-      stream.value = null;
-    };
-
-    // Clean up old stream listeners
     if (oldStream) {
       oldStream
         .getTracks()
-        .forEach((track) =>
-          track.removeEventListener("ended", handleStreamEnded),
-        );
+        .forEach((track) => track.removeEventListener('ended', handleStreamEnded))
     }
-
-    // Add listeners to new stream
+    
     if (newStream) {
       newStream
         .getTracks()
-        .forEach((track) => track.addEventListener("ended", handleStreamEnded));
+        .forEach((track) => track.addEventListener('ended', handleStreamEnded))
     }
-  });
+  })
+
+  onUnmounted(() => {
+    if (stream.value) {
+      stream.value
+        .getTracks()
+        .forEach((track) => track.removeEventListener('ended', handleStreamEnded))
+    }
+  })
 
   const start = async () => {
     const mediaStream = await navigator.mediaDevices.getUserMedia({
       video: true,
-    });
-    stream.value = mediaStream;
-    isStreaming.value = true;
-    return mediaStream;
-  };
+    })
+    stream.value = mediaStream
+    isStreaming.value = true
+    return mediaStream
+  }
 
   const stop = () => {
     if (stream.value) {
-      stream.value.getTracks().forEach((track) => track.stop());
-      stream.value = null;
-      isStreaming.value = false;
+      stream.value.getTracks().forEach((track) => track.stop())
+      stream.value = null
     }
-  };
+    isStreaming.value = false
+  }
 
-  const result: UseMediaStreamResult = {
-    type: "webcam",
+  return {
+    type: 'webcam' as const,
     start,
     stop,
     isStreaming,
     stream,
-  };
-
-  return result;
+  }
 }

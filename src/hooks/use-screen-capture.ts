@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from "react";
+import { ref, watch } from "vue";
 import { UseMediaStreamResult } from "./use-media-stream-mux";
 
 export function useScreenCapture(): UseMediaStreamResult {
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
+  const stream = ref<MediaStream | null>(null);
+  const isStreaming = ref(false);
 
-  useEffect(() => {
+  watch(stream, (newStream, oldStream) => {
     const handleStreamEnded = () => {
-      setIsStreaming(false);
-      setStream(null);
+      isStreaming.value = false;
+      stream.value = null;
     };
-    if (stream) {
-      stream
+
+    // Clean up old stream listeners
+    if (oldStream) {
+      oldStream
+        .getTracks()
+        .forEach((track) =>
+          track.removeEventListener("ended", handleStreamEnded),
+        );
+    }
+
+    // Add listeners to new stream
+    if (newStream) {
+      newStream
         .getTracks()
         .forEach((track) => track.addEventListener("ended", handleStreamEnded));
-      return () => {
-        stream
-          .getTracks()
-          .forEach((track) =>
-            track.removeEventListener("ended", handleStreamEnded),
-          );
-      };
     }
-  }, [stream]);
+  });
 
   const start = async () => {
     // const controller = new CaptureController();
@@ -47,16 +51,16 @@ export function useScreenCapture(): UseMediaStreamResult {
       video: true,
       // controller
     });
-    setStream(mediaStream);
-    setIsStreaming(true);
+    stream.value = mediaStream;
+    isStreaming.value = true;
     return mediaStream;
   };
 
   const stop = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-      setIsStreaming(false);
+    if (stream.value) {
+      stream.value.getTracks().forEach((track) => track.stop());
+      stream.value = null;
+      isStreaming.value = false;
     }
   };
 

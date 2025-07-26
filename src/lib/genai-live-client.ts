@@ -15,22 +15,27 @@
  */
 
 import {
-  Content,
   GoogleGenAI,
-  LiveCallbacks,
   LiveClientToolResponse,
+  LiveServerMessage,
+  Session,
+} from "@google/genai";
+
+// Import types that are only available as TypeScript types
+import type {
+  Content,
+  LiveCallbacks,
   LiveConnectConfig,
   LiveServerContent,
-  LiveServerMessage,
   LiveServerToolCall,
   LiveServerToolCallCancellation,
   Part,
-  Session,
 } from "@google/genai";
 
 import { EventEmitter } from "eventemitter3";
 import { difference } from "lodash";
-import { LiveClientOptions, StreamingLog } from "../types";
+import type { LiveClientOptions } from "../types";
+import type { StreamingLog } from "../types";
 import { base64ToArrayBuffer } from "./utils";
 
 /**

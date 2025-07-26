@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { Ref } from 'vue'
+import { inject } from 'vue'
+import { type UseLiveAPIResults } from '../hooks/use-live-api'
 
-export type UseMediaStreamResult = {
-  type: "webcam" | "screen";
-  start: () => Promise<MediaStream>;
-  stop: () => void;
-  isStreaming: Ref<boolean>;
-  stream: Ref<MediaStream | null>;
-};
+export const useLiveAPIContext = (): UseLiveAPIResults => {
+  const context = inject<UseLiveAPIResults>('liveAPI')
+  if (!context) {
+    throw new Error('useLiveAPIContext must be used within a LiveAPIProvider')
+  }
+  return context
+}

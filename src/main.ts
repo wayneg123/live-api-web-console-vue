@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { Ref } from 'vue'
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import './index.css'
+import App from './App.vue'
+import reportWebVitals from './reportWebVitals'
 
-export type UseMediaStreamResult = {
-  type: "webcam" | "screen";
-  start: () => Promise<MediaStream>;
-  stop: () => void;
-  isStreaming: Ref<boolean>;
-  stream: Ref<MediaStream | null>;
-};
+const app = createApp(App)
+app.use(createPinia())
+app.mount('#root')
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals()

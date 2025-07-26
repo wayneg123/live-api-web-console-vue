@@ -14,102 +14,112 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import type { Ref } from "vue";
 import { GenAILiveClient } from "../lib/genai-live-client";
-import { LiveClientOptions } from "../types";
+import type { LiveClientOptions } from "../types";
 import { AudioStreamer } from "../lib/audio-streamer";
 import { audioContext } from "../lib/utils";
 import VolMeterWorket from "../lib/worklets/vol-meter";
-import { LiveConnectConfig } from "@google/genai";
+// Import types that are only available as TypeScript types
+import type { LiveConnectConfig } from "@google/genai";
 
 export type UseLiveAPIResults = {
   client: GenAILiveClient;
   setConfig: (config: LiveConnectConfig) => void;
-  config: LiveConnectConfig;
-  model: string;
+  config: Ref<LiveConnectConfig>;
+  model: Ref<string>;
   setModel: (model: string) => void;
-  connected: boolean;
+  connected: Ref<boolean>;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  volume: number;
+  volume: Ref<number>;
 };
 
 export function useLiveAPI(options: LiveClientOptions): UseLiveAPIResults {
-  const client = useMemo(() => new GenAILiveClient(options), [options]);
-  const audioStreamerRef = useRef<AudioStreamer | null>(null);
+  const client = computed(() => new GenAILiveClient(options));
+  const audioStreamerRef = ref<AudioStreamer | null>(null);
 
-  const [model, setModel] = useState<string>("models/gemini-2.0-flash-exp");
-  const [config, setConfig] = useState<LiveConnectConfig>({});
-  const [connected, setConnected] = useState(false);
-  const [volume, setVolume] = useState(0);
+  const model = ref<string>("models/gemini-2.0-flash-exp");
+  const config = ref<LiveConnectConfig>({});
+  const connected = ref(false);
+  const volume = ref(0);
+
+  const setModel = (newModel: string) => {
+    model.value = newModel;
+  };
+
+  const setConfig = (newConfig: LiveConnectConfig) => {
+    config.value = newConfig;
+  };
 
   // register audio for streaming server -> speakers
-  useEffect(() => {
-    if (!audioStreamerRef.current) {
+  onMounted(() => {
+    if (!audioStreamerRef.value) {
       audioContext({ id: "audio-out" }).then((audioCtx: AudioContext) => {
-        audioStreamerRef.current = new AudioStreamer(audioCtx);
-        audioStreamerRef.current
+        audioStreamerRef.value = new AudioStreamer(audioCtx);
+        audioStreamerRef.value
           .addWorklet<any>("vumeter-out", VolMeterWorket, (ev: any) => {
-            setVolume(ev.data.volume);
+            volume.value = ev.data.volume;
           })
           .then(() => {
             // Successfully added worklet
           });
       });
     }
-  }, [audioStreamerRef]);
+  });
 
-  useEffect(() => {
+  onMounted(() => {
     const onOpen = () => {
-      setConnected(true);
+      connected.value = true;
     };
 
     const onClose = () => {
-      setConnected(false);
+      connected.value = false;
     };
 
     const onError = (error: ErrorEvent) => {
       console.error("error", error);
     };
 
-    const stopAudioStreamer = () => audioStreamerRef.current?.stop();
+    const stopAudioStreamer = () => audioStreamerRef.value?.stop();
 
     const onAudio = (data: ArrayBuffer) =>
-      audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+      audioStreamerRef.value?.addPCM16(new Uint8Array(data));
 
-    client
+    client.value
       .on("error", onError)
       .on("open", onOpen)
       .on("close", onClose)
       .on("interrupted", stopAudioStreamer)
       .on("audio", onAudio);
 
-    return () => {
-      client
+    onUnmounted(() => {
+      client.value
         .off("error", onError)
         .off("open", onOpen)
         .off("close", onClose)
         .off("interrupted", stopAudioStreamer)
         .off("audio", onAudio)
         .disconnect();
-    };
-  }, [client]);
+    });
+  });
 
-  const connect = useCallback(async () => {
-    if (!config) {
+  const connect = async () => {
+    if (!config.value) {
       throw new Error("config has not been set");
     }
-    client.disconnect();
-    await client.connect(model, config);
-  }, [client, config, model]);
+    client.value.disconnect();
+    await client.value.connect(model.value, config.value);
+  };
 
-  const disconnect = useCallback(async () => {
-    client.disconnect();
-    setConnected(false);
-  }, [setConnected, client]);
+  const disconnect = async () => {
+    client.value.disconnect();
+    connected.value = false;
+  };
 
   return {
-    client,
+    client: client.value,
     config,
     setConfig,
     model,
